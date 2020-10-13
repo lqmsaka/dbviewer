@@ -19,6 +19,9 @@
 				<table id='list'></table>
 			</div>
 			<div class="col-xs-9 col-xs-offset-3" style="height: 100%">
+			<div class="row">
+				<button onclick="search()">Search</button>
+			</div>
 			<div class="row" style="height: 30%;overflow: overlay">
 				<div id="ts"></div>
 			</div>
@@ -37,22 +40,77 @@
     <script>
     	$(function(){
     		$('#list').bootstrapTable({
+			  url:"tablelist.json",
 			  columns: [{
 			    checkbox: true
 			  }, {
 			    field: 'tablename',
 			    title: '表名'
 			  }],
-			  data: [{
-			    tablename: "table1",
-			  }, {
-			    tablename: "table2",
-			  }, {
-			    tablename: "table3",
-			  }]
+			  onCheck:function(row,$elem){
+			  	table(row.tablename);
+			  },
+			  onUncheck:function (row,$elem) {
+			  	remove(row.tablename);
+			  }
 			});
 
-			table("abc");
+			//table("table1");
+    	})
+
+    	function table(name){
+    		var panel = $("#ts");
+    		var t = panel.find(`#${name}`);
+    		panel.append(`<div class="col-xs-4"><div>`).children("div:last").append(`<table id='${name}'></table>`);
+    		t = $(`#${name}`);
+    		t.bootstrapTable({
+    			url:`${name}.json`,
+    			columns:[
+	    			{
+	    				checkbox:true
+	    			},{
+	    				field:"name",
+	    				title:name
+	    			},{
+	    				field:"disp",
+	    				title:""//"显示名称"
+	    			},{
+	    				field:"filter",
+	    				title:"条件"
+	    			}
+    			],
+				toolbar:`<button onclick='removeSelf("${name}")'>移除</button>`,
+				//showHeader:false
+    		})
+    	}
+
+    	function remove(name){
+		  	$(`#${name}`).parents(".bootstrap-table:first").parent().remove();
+
+    	}
+
+    	function removeSelf(name){
+		  	$("#list").bootstrapTable("uncheckBy",{field:'tablename',values:name});
+    	}
+
+    	function search(){
+    		let list = $("#ts").find("table.table")
+    		let cond = [];
+    		for(let i =0;i <list.length;i++){
+    			let table = list[i];
+    			let rows = $(table).bootstrapTable('getSelections');
+    			let t = {};
+    			t.name = table.id;
+    			t.cond = [];
+    			for(let j=0;j<rows.length;j++){
+    				let row = rows[j];
+    				t.cond.push(row.name)
+    			}
+    			cond.push(t);
+    		}
+    		showdetail(cond);
+    	}
+    	function showdetail(cond){
 
 			$("#detail").bootstrapTable({
 				columns:[
@@ -103,72 +161,6 @@
 				],
 				showColumns:true
 			})
-    	})
-
-    	function table(name){
-    		var panel = $("#ts");
-    		var t = panel.find(`#${name}`);
-    		panel.append(`<div class="col-xs-4"><div>`).children("div:last").append(`<table id='${name}'></table>`);
-    		t = $(`#${name}`);
-    		t.bootstrapTable({
-    			columns:[{
-    				checkbox:true
-    			},{
-    				field:"name",
-    				title:name
-    			},{
-    				field:"disp",
-    				title:""//"显示名称"
-    			}]
-    		})
-    		panel.append(`<div class="col-xs-4"><div>`).children("div:last").append(`<table id='${name}2'></table>`);
-    		t = $(`#${name}2`);
-    		t.bootstrapTable({
-    			columns:[
-	    			{
-	    				checkbox:true
-	    			},{
-	    				field:"name",
-	    				title:name
-	    			},{
-	    				field:"disp",
-	    				title:""//"显示名称"
-	    			},{
-	    				field:"filter",
-	    				title:"条件"
-	    			}
-    			],
-    			data:[{
-    				name:"ID",
-					disp:"ID"},{
-					name:"OPER_TYPE",
-					disp:"操作类型",},{
-					name:"OPER_CMD",
-					disp:"操作命令",},{
-					name:"TABLE_NAME",
-					disp:"涉及数据",},{
-					name:"OPER_PARAM",
-					disp:"操作参数",},{
-					name:"START_TIME",
-					disp:"开始时间",},{
-					name:"END_TIME",
-					disp:"结束时间",},{
-					name:"AFFECT_ROWS",
-					disp:"影响记录",},{
-					name:"IS_SUCESS",
-					disp:"成功标志",},{
-					name:"ERROR_INFO",
-					disp:"错误信息",},{
-					name:"OPER_MAN",
-					disp:"操作人",},{
-					name:"OPER_MAN_ID",
-					disp:"操作人id",},{
-					disp:"涉及记录",},{
-					disp:"任务开始日期"
-    			}],
-				toolbar:"<button>移除</button>",
-				//showHeader:false
-    		})
     	}
     </script>
 </body>

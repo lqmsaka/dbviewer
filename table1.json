@@ -1,0 +1,41 @@
+[{
+	"name":"ID",
+	"disp":"ID"
+},{
+	"name":"OPER_TYPE",
+	"disp":"操作类型"
+},{
+	"name":"OPER_CMD",
+	"disp":"操作命令"
+},{
+	"name":"TABLE_NAME",
+	"disp":"涉及数据"
+},{
+	"name":"OPER_PARAM",
+	"disp":"操作参数"
+},{
+	"name":"START_TIME",
+	"disp":"开始时间"
+},{
+	"name":"END_TIME",
+	"disp":"结束时间"
+},{
+	"name":"AFFECT_ROWS",
+	"disp":"影响记录"
+},{
+	"name":"IS_SUCESS",
+	"disp":"成功标志"
+},{
+	"name":"ERROR_INFO",
+	"disp":"错误信息"
+},{
+	"name":"OPER_MAN",
+	"disp":"操作人"
+},{
+	"name":"OPER_MAN_ID",
+	"disp":"操作人id"
+},{
+	"disp":"涉及记录"
+},{
+	"disp":"任务开始日期"
+}]
