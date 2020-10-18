@@ -39,22 +39,22 @@
 			<h4 class="modal-title" id="exampleModalLabel">New message</h4>
 		  </div>
 		  <div class="modal-body">
-		  	<table id="mt" class="table table-striped">
-		  		<thead>
-		  			<tr>操作</tr>
-		  			<tr>组合模式</tr>
-		  			<tr>条件类型</tr>
-		  			<tr>表达式</tr>
-		  		</thead>
-		  		<tbody>
-		  			<tr>
-		  				<td><button onclick="abc(this)">+</button></td>
-		  				<td></td>
-		  				<td></td>
-		  				<td></td>
-		  			</tr>
-		  		</tbody>
-		  	</table>
+			<table id="mt" class="table table-striped">
+				<thead>
+					<tr>操作</tr>
+					<tr>组合模式</tr>
+					<tr>条件类型</tr>
+					<tr>表达式</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><button onclick="abc(this)">+</button></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
 		  </div>
 		  <div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -70,6 +70,75 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
 	<script src="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"></script>
 	<script>
+		let result=[];
+		function addTable(name){
+			for(let i=0;i<result.length;i++){
+				if(result[i].name==name)
+					return;
+			}
+			result.push({name:name});
+		}
+		function removeTable(name){
+			for(let i=0;i<result.length;i++){
+				if(result[i].name==name){
+					result.splice(i,1);
+					break;
+				}
+			}
+		}
+		function addColumn(table,column){
+			for(let i=0;i<result.length;i++){
+				let t = result[i];
+				if(t.name==name){
+					if(t.col==null){
+						t.col = [];
+					}
+					else{
+						for(let j=0;j<t.col.length;j++){
+							if(t.col[j]==column)
+								return;
+						}
+					}
+					t.col.push(column);
+				}
+			}
+		}
+		function removeColumn(table,column){
+			for(let i=0;i<result.length;i++){
+				let t = result[i];
+				if(t.name==name){
+					if(t.col==null){
+						return;
+					}
+					else{
+						for(let j=0;j<t.col.length;j++){
+							if(t.col[j]==column)
+								t.col.splice(j,1);
+						}
+					}
+				}
+			}
+		}
+		function addCondition(table condition){
+			for(let i=0;i<result.length;i++){
+				let t = result[i];
+				if(t.name==name){
+					if(t.condition==null){
+						t.condition = [];
+					}
+					else{
+						for(let j=0;j<t.condition.length;j++){
+							let c = t.condition[j];
+							if(c.col==condition.col && c.type==condition.type && c.oper==condition.oper && c.text==condition.text){
+								return;
+							}
+						}
+					}
+					t.col.push(condition);
+				}
+			}
+		}
+
 		$(function(){
 			$('#list').bootstrapTable({
 			  url:"tablelist.json",
@@ -80,10 +149,10 @@
 				title: '表名'
 			  }],
 			  onCheck:function(row,$elem){
-			  	table(row.tablename);
+				table(row.tablename);
 			  },
 			  onUncheck:function (row,$elem) {
-			  	remove(row.tablename);
+				remove(row.tablename);
 			  }
 			});
 
@@ -118,12 +187,12 @@
 		}
 
 		function remove(name){
-		  	$(`#${name}`).parents(".bootstrap-table:first").parent().remove();
+			$(`#${name}`).parents(".bootstrap-table:first").parent().remove();
 
 		}
 
 		function removeSelf(name){
-		  	$("#list").bootstrapTable("uncheckBy",{field:'tablename',values:name});
+			$("#list").bootstrapTable("uncheckBy",{field:'tablename',values:name});
 		}
 
 		function search(){
@@ -198,13 +267,12 @@
 		}
 
 		function abc(){
-			$("#mt tbody").children(":last").before(`
-	  			<tr>
-	  				<td><button onclick="xyz(this)">-</button></td>
-	  				<td><a href="javascript:void(0)" onclick="popAndOr(this)">and</a></td>
-	  				<td><a href="javascript:void(0)" onclick="popOperation(this)">包含</a></td>
-	  				<td><input class="form-control" value="123"></td>
-	  			</tr>`)
+			$("#mt tbody").children(":last").before(`<tr>
+				<td><button onclick="xyz(this)">-</button></td>
+				<td><a href="javascript:void(0)" onclick="popAndOr(this)">and</a></td>
+				<td><a href="javascript:void(0)" onclick="popOperation(this)">包含</a></td>
+				<td><input class="form-control" value="123"></td>
+			</tr>`)
 		}
 		function xyz(item){
 			$(item).parent().parent().remove();
