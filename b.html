@@ -124,7 +124,7 @@
 				}
 			}
 		}
-		function addCondition(table, column, condition) {
+		function addCondition(table, column, newCondition) {
 			for (let i = 0; i < result.length; i++) {
 				let t = result[i];
 				if (t.name == table) {
@@ -134,13 +134,16 @@
 					else {
 						for (let j = 0; j < t.condition.length; j++) {
 							let c = t.condition[j];
-							if (c.col.name == column) {
-								c.col.ccc = condition;
+							if (c.name == column) {
+								if (newCondition.length == 0)
+									t.condition.splice(j, 1);
+								else
+									c.ccc = newCondition;
 								return;
 							}
 						}
 					}
-					t.col.push({ name: column, ccc: condition });
+					t.condition.push({ name: column, ccc: newCondition });
 				}
 			}
 		}
@@ -155,8 +158,8 @@
 					if (t.condition != null) {
 						for (let j = 0; j < t.condition.length; j++) {
 							let c = t.condition[j];
-							if (c.col.name == column) {
-								return c.col.ccc;
+							if (c.name == column) {
+								return c.ccc;
 							}
 						}
 					}
@@ -205,7 +208,7 @@
 					}, {
 						field: "filter",
 						title: "条件",
-						formatter: `<button onclick="aaa(${name},this,event)">条件</button>`
+						formatter: `<button onclick="aaa('${name}',this,event)">条件</button>`
 					}
 				],
 				toolbar: `<button onclick='removeSelf("${name}")'>移除</button>`,
@@ -303,10 +306,12 @@
 		function abc() {
 			$("#mt tbody").children(":last").before(`<tr>
 				<td><button onclick="xyz(this)">-</button></td>
-				<td><a href="javascript:void(0)" onclick="popAndOr(this)">and</a></td>
-				<td><a href="javascript:void(0)" onclick="popOperation(this)">包含</a></td>
+				<td><a class="popAndOr" href="javascript:void(0)" onclick="currentElement=$(this)">and</a></td>
+				<td><a class="popOperation" href="javascript:void(0)" onclick="currentElement=$(this)">包含</a></td>
 				<td><input class="form-control" value="123"></td>
 			</tr>`)
+			popAndOr("a.popAndOr");
+			popOperation("a.popOperation");
 		}
 		function xyz(item) {
 			$(item).parent().parent().remove();
@@ -315,13 +320,16 @@
 		let curentCondition;
 		function aaa(table, me, event) {
 			curentCondition = $(me);
-			loadCondition(getCondition(table, curentCondition.parent().prev().prev().text()));
-			$("#condition").modal("show");
+			let column = curentCondition.parent().prev().prev().text();
+			loadCondition(getCondition(table, column));
+			let $c = $("#condition");
+			$c.data("table", table);
+			$c.data("column", column);
+			$c.modal("show");
 		}
 
-		function popAndOr(me) {
-			currentElement = $(me);
-			$(me).popover({
+		function popAndOr(jq) {
+			$(jq).popover({
 				html: true,
 				container: "body",
 				content: `<a href="javascript:void(0)" onclick="setHtml('and')">and</a><br>
@@ -329,9 +337,8 @@
 				trigger: "focus"
 			})
 		}
-		function popOperation(me) {
-			currentElement = $(me);
-			$(me).popover({
+		function popOperation(jq) {
+			$(jq).popover({
 				html: true,
 				container: "body",
 				content: `<a href="javascript:void(0)" onclick="setHtml('等于')">等于</a><br>
@@ -357,12 +364,14 @@
 				for (let i = 0; i < condition.length; i++) {
 					tr.push(`<tr>
 					<td><button onclick="xyz(this)">-</button></td>
-					<td><a href="javascript:void(0)" onclick="popAndOr(this)">and<${condition[i].type}/a></td>
-					<td><a href="javascript:void(0)" onclick="popOperation(this)">${condition[i].oper}</a></td>
+					<td><a class="popAndOr" href="javascript:void(0)" onclick="currentElement=$(this)">and<${condition[i].type}</a></td>
+					<td><a class="popOperation" href="javascript:void(0)" onclick="currentElement=$(this)">${condition[i].oper}</a></td>
 					<td><input class="form-control" value="${condition[i].text}"></td>
 				</tr>`);
 				}
 			}
+			popAndOr("a.popAndOr");
+			popOperation("a.popOperation");
 			tr.push(`<tr>
 				<td><button onclick="abc(this)">+</button></td>
 				<td></td>
@@ -373,8 +382,11 @@
 		}
 
 		//将model中的条件保存到查询json中
-		function confirmCondition(table, column) {
+		function confirmCondition() {
 			let condition = [];
+			let $c = $("#condition");
+			let table = $c.data("table");
+			let column = $c.data("column");
 			let rows = $("#mt tbody").children()
 			for (let i = 0; i < rows.length; i++) {
 				let cells = $(rows[i]).children();
@@ -387,7 +399,7 @@
 				});
 			}
 			addCondition(table, column, condition);
-			$("#mt").modal("hide");
+			$c.modal("hide");
 		}
 	</script>
 </body>
