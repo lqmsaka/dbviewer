@@ -192,7 +192,7 @@
 		function table(name) {
 			var panel = $("#ts");
 			var t = panel.find(`#${name}`);
-			panel.append(`<div class="col-xs-4"><div>`).children("div:last").append(`<table id='${name}'></table>`);
+			panel.append(`<div class="col-xs-4"><div>`).children("div:last").append(`<table class="table table-condensed" id='${name}'></table>`);
 			t = $(`#${name}`);
 			t.bootstrapTable({
 				url: `${name}.json`,
